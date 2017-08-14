@@ -1,6 +1,7 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
+const Bear = require('./models');
 
 const STATUS_USER_ERROR = 422;
 const STATUS_SERVER_ERROR = 500;
@@ -15,9 +16,95 @@ server.use(bodyParser.json());
 
 
 // TODO: write your server code here
+// server.post('/bears', (req, res) => {
+//   const { species, latinName } = req.body;
+//   if (!species) {
+//     res.status({ STATUS_USER_ERROR });
+//     res.json({ error: 'Must provide a species' });
+  //   return;
+//   }
+//   if (!latinName) {
+//     res.status({ STATUS_USER_ERROR });
+//     res.json({ error: 'Must provide a latin name' });
+//     return;
+//   }
+//   const bear = new Bear({ species, latinName });
+//   bear.save((err) => {
+//     if (err) {
+//       res.status({ STATUS_SERVER_ERROR });
+//       res.json(err);
+//     } else {
+//     res.json(bear);
+//     }
+//   });
+// });
+// 
+// server.get('/bears', (req, res) => {
+//   const { species, latinName } = req.body;
+//   Bear.find({}, (err, bears) => {
+//     if (err) {
+//       res.status({ STATUS_SERVER_ERROR });
+//       res.json(err);
+//     } else {
+//       res.json(bears);
+//     }
+//   });
+// });
+// 
+// server.get('/bears/:id', (req, res) => {
+//   const { id } = req.params;
+//   Bear.findById(id, (err, bear) => {
+//     if (err) {
+//       res.status(STATUS_SERVER_ERROR);
+//       res.json(err);
+//     } else {
+//       res.json(Bears);
+//     }
+//   });
+// });
+server.get('/bears', (req, res) => {
+  // .find() is a method you can use to read all the documents from the
+  // collection.
+  Bear.find({}, (err, bears) => {
+    if (err) {
+      res.status(STATUS_SERVER_ERROR);
+      res.json(err);
+    } else {
+      res.json(bears);
+    }
+  });
+});
 
+server.get('/bears/:id', (req, res) => {
+  const { id } = req.params;
+  Bear.findById(id, (err, bear) => {
+    if (err) {
+      res.status(STATUS_SERVER_ERROR);
+      res.json(err);
+    } else {
+      res.json(bear);
+    }
+  });
+});
 
+server.post('/bears', (req, res) => {
+  const { species, latinName } = req.body;
+  if (!species || !latinName) {
+    res.status(STATUS_USER_ERROR);
+    res.json({ error: 'Must provide species and latinName' });
+    return;
+  }
 
+  const bear = new Bear({ species, latinName });
+  bear.save((err) => {
+    if (err) {
+      res.status(STATUS_SERVER_ERROR);
+      res.json(err);
+    } else {
+      res.json(bear);
+    }
+  });
+});
 
 
 
